@@ -82,7 +82,7 @@ Installation and Requirements
 ``[countdown]`` requires ``[tz_convert]`` in order to convert countdowns
 between time zones. For more information on ``[tz_convert]``, read the article
 `tz_convert - Convert datetime types between time zones in Lasso 8
-</articles/tz_convert-convert-datetime-types-between-time-zones-in-lasso-8/>`_.
+<http://www.stevepiercy.com/articles/tz_convert-convert-datetime-types-between-time-zones-in-lasso-8/>`_.
 
 The repository contains the tag ``[countdown]`` in a file named
 ``countdown.lasso``.
@@ -105,7 +105,7 @@ The demo uses ``[tz_select]`` in order to render an HTML select menu of time
 zones, but is not required by ``[countdown]``. For more information on
 ``[tz_select]``, read the article `tz_select - Display an HTML select menu of
 time zones with Lasso
-</articles/tz_select-display-an-html-select-menu-of-time-zones-with-lasso/>`_.
+<http://www.stevepiercy.com/articles/tz_select-display-an-html-select-menu-of-time-zones-with-lasso/>`_.
 
 For the demo, install and configure the additional requirements.
 
