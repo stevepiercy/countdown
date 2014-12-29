@@ -18,12 +18,8 @@
 <input placeholder="date, or tap an arrow key" name="t0" id="t0" type="text" size="30" value="[action_param('t0')]">
 </div>
 <div>
-<label>Timezone of T-0</label>
-[tz_select(-name='tzout', -selected=action_param('tzout'))]
-</div>
-<div>
-<label>Format</label>
-<input name="format" id="format" type="text" size="20" value="[action_param('format')]" placeholder="%F %T"> (See GNU coreutils <a href="http://www.gnu.org/software/coreutils/manual/coreutils.html#date-invocation" target="_blank">time, date, and literal conversion specifiers</a> for formats.)
+<label>Time zone of T-0</label>
+[tz_select(-name='timezone', -selected=action_param('timezone'))]
 </div>
 <div>
 <input name="submit" id="submit" type="submit" value="submit" class="button" />
@@ -32,12 +28,13 @@
 
 [if(action_param('submit') != '');
 
-    local('apt0' = action_param('t0'));
-    local('t0' = date(action_param('t0')));
-    local('tzin' = action_param('tzin'));
-    local('tzout' = action_param('tzout'));
-    local('format' = action_param('format'));
-    local('valid_tz' = array(
+    local('apt0') = action_param('t0');
+    local('t0') = date(action_param('t0'));
+    local('tztarget') = action_param('timezone');
+    // Configure as needed. My server, although located in Chicago, uses
+    // the same time zone as where I am located and do my local development.
+    local('tzserver') = (server_name == 'sp' ? 'America/Los_Angeles' | 'America/Los_Angeles');
+    local('valid_tz') = array(
 '', // default case
 'America/Puerto_Rico',
 'America/New_York',
@@ -528,26 +525,26 @@
 'UTC+11',
 'UTC+12',
 'UTC+13',
-'UTC+14'));
-	if(string_findregexp(#apt0, -find='^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$')->size!=1);
-    	'<div class="alert-box error alert radius">Date/Time is not in a valid format.</div>';
-	else(!valid_date(#apt0,-format='%Q %T'));
-    	'<div class="alert-box error alert radius">Date/Time is not valid.</div>';
-    else(#valid_tz !>> #tzin || #valid_tz !>> #tzout);
+'UTC+14');
+    if(string_findregexp(#apt0, -find='^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$')->size!=1);
+        '<div class="alert-box error alert radius">Date/Time is not in a valid format.</div>';
+    else(!valid_date(#apt0,-format='%Q %T'));
+        '<div class="alert-box error alert radius">Date/Time is not valid.</div>';
+    else(#valid_tz !>> #tztarget);
         '<div class="alert-box error alert radius">Time Zone is not valid.</div>';
-    else(string_findregexp(#format, -find='[^a-zA-Z 0^#%:_-]'));
-        '<div class="alert-box error alert radius">Format is not valid.</div>';
-    else(string_findregexp(#t0, -find='[^a-zA-Z 0^#%:_-]'));
-        '<div class="alert-box error alert radius">Format is not valid</div>';
     else;
-        '<div class="alert-box error alert radius">
-        <h3>Conversion of ';
-        #tzin == '' ? 'UTC' | #tzin;
-        ' to ';
-        #tzout == '' ? 'UTC' | #tzout;
-        '</h3>';
-        tz_convert(-dt=#t0, -tzin='America/Chicago', -tzout=#tzout, -format=#format);
-        '</div>';
+        local('c') = countdown(-t0=#t0, -tztarget=#tztarget, -tzserver=#tzserver);
+]
+        <div class="alert-box info noicon radius">
+            <h3>Current time in T-0's time zone</h3>
+            <p>[tz_convert(-dt=date, -tzin=#tzserver, -tzout=#tztarget)]</p>
+            <h3>Countdown to T-0, time remaining</h3>
+            <p>Days: [#c->days]</p>
+            <p>Hours: [#c->hours]</p>
+            <p>Minutes: [#c->minutes]</p>
+            <p>Seconds: [#c->seconds]</p>
+        </div>
+[
     /if;
 /if]
 
